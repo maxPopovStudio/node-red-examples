@@ -1,1 +1,306 @@
-[]
+[
+    {
+        "id": "bd5e6c6d.78fc3",
+        "type": "tab",
+        "label": "Start",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "33c0987f.da74f8",
+        "type": "subflow",
+        "name": "Get currency",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 260,
+                "y": 120,
+                "wires": [
+                    {
+                        "id": "8b460426.1ad1a8"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 1140,
+                "y": 60,
+                "wires": [
+                    {
+                        "id": "b4fd1bfd.97c1c8",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 1140,
+                "y": 120,
+                "wires": [
+                    {
+                        "id": "b4fd1bfd.97c1c8",
+                        "port": 1
+                    }
+                ]
+            },
+            {
+                "x": 1580,
+                "y": 180,
+                "wires": [
+                    {
+                        "id": "1e4d7cc6.900813",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "inputLabels": [
+            "currency"
+        ],
+        "outputLabels": [
+            "HTTP 200",
+            "HTTP 400",
+            "HTTP 500"
+        ]
+    },
+    {
+        "id": "469cf47a.fc703c",
+        "type": "http in",
+        "z": "bd5e6c6d.78fc3",
+        "name": "",
+        "url": "/test",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 210,
+        "y": 100,
+        "wires": [
+            [
+                "a2094ebc.d0958"
+            ]
+        ]
+    },
+    {
+        "id": "7120d965.64acf8",
+        "type": "http request",
+        "z": "33c0987f.da74f8",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "proxy": "",
+        "authType": "",
+        "x": 690,
+        "y": 120,
+        "wires": [
+            [
+                "b4fd1bfd.97c1c8"
+            ]
+        ]
+    },
+    {
+        "id": "b4fd1bfd.97c1c8",
+        "type": "switch",
+        "z": "33c0987f.da74f8",
+        "name": "What HTTP Code?",
+        "property": "statusCode",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "200",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "400",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "500",
+                "vt": "str"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 3,
+        "x": 950,
+        "y": 120,
+        "wires": [
+            [],
+            [],
+            [
+                "43471bce.d2fae4"
+            ]
+        ]
+    },
+    {
+        "id": "4dd079a2.523a58",
+        "type": "subflow:33c0987f.da74f8",
+        "z": "bd5e6c6d.78fc3",
+        "name": "",
+        "env": [],
+        "x": 670,
+        "y": 100,
+        "wires": [
+            [
+                "a8035f14.879a8"
+            ],
+            [
+                "c2113e11.38144"
+            ],
+            [
+                "21f42098.aaf53"
+            ]
+        ]
+    },
+    {
+        "id": "8b460426.1ad1a8",
+        "type": "function",
+        "z": "33c0987f.da74f8",
+        "name": "Set path & params",
+        "func": "msg.repeatCount = 1;\nmsg.url = \"https://api.exchangeratesapi.io/latest?base=\" + msg.currency;\nmsg.method = \"get\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 450,
+        "y": 120,
+        "wires": [
+            [
+                "7120d965.64acf8"
+            ]
+        ]
+    },
+    {
+        "id": "a2094ebc.d0958",
+        "type": "change",
+        "z": "bd5e6c6d.78fc3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "currency",
+                "pt": "msg",
+                "to": "payload.currency",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 450,
+        "y": 100,
+        "wires": [
+            [
+                "4dd079a2.523a58"
+            ]
+        ]
+    },
+    {
+        "id": "a8035f14.879a8",
+        "type": "http response",
+        "z": "bd5e6c6d.78fc3",
+        "name": "Success, 200",
+        "statusCode": "200",
+        "headers": {},
+        "x": 900,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "c2113e11.38144",
+        "type": "http response",
+        "z": "bd5e6c6d.78fc3",
+        "name": "Incorrect currency",
+        "statusCode": "400",
+        "headers": {},
+        "x": 910,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "21f42098.aaf53",
+        "type": "http response",
+        "z": "bd5e6c6d.78fc3",
+        "name": "Server error",
+        "statusCode": "500",
+        "headers": {},
+        "x": 890,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "43471bce.d2fae4",
+        "type": "delay",
+        "z": "33c0987f.da74f8",
+        "name": "Delay 10 sec",
+        "pauseType": "delay",
+        "timeout": "10",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 1190,
+        "y": 180,
+        "wires": [
+            [
+                "1e4d7cc6.900813"
+            ]
+        ]
+    },
+    {
+        "id": "e57308d9.ae8b38",
+        "type": "function",
+        "z": "33c0987f.da74f8",
+        "name": "repeatCount +1",
+        "func": "msg.repeatCount++;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1200,
+        "y": 260,
+        "wires": [
+            [
+                "7120d965.64acf8"
+            ]
+        ]
+    },
+    {
+        "id": "1e4d7cc6.900813",
+        "type": "switch",
+        "z": "33c0987f.da74f8",
+        "name": "repeatCount = 3 ?",
+        "property": "repeatCount",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "3",
+                "vt": "num"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 1410,
+        "y": 180,
+        "wires": [
+            [],
+            [
+                "e57308d9.ae8b38"
+            ]
+        ]
+    }
+]
