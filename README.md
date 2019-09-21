@@ -1,4 +1,4 @@
-test
+Library of examples of work with Node-RED
 ====
 
 ### About
